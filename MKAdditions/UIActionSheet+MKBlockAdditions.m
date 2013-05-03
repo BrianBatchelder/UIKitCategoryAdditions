@@ -12,6 +12,7 @@ static DismissBlock _dismissBlock;
 static CancelBlock _cancelBlock;
 static PhotoPickedBlock _photoPickedBlock;
 static UIViewController *_presentVC;
+static BOOL _allowsEditing;
 
 @implementation UIActionSheet (MKBlockAdditions)
 
@@ -76,6 +77,16 @@ static UIViewController *_presentVC;
 + (void) photoPickerWithTitle:(NSString*) title
                    showInView:(UIView*) view
                     presentVC:(UIViewController*) presentVC
+                onPhotoPicked:(PhotoPickedBlock) photoPicked
+                     onCancel:(CancelBlock) cancelled
+{
+    [self photoPickerWithTitle:title showInView:view allowsEditing:YES presentVC:presentVC onPhotoPicked:photoPicked onCancel:cancelled ];
+}
+
++ (void) photoPickerWithTitle:(NSString*) title
+                   showInView:(UIView*) view
+                allowsEditing:(BOOL)allowsEditing
+                    presentVC:(UIViewController*) presentVC
                 onPhotoPicked:(PhotoPickedBlock) photoPicked                   
                      onCancel:(CancelBlock) cancelled
 {
@@ -87,6 +98,8 @@ static UIViewController *_presentVC;
     
     [_presentVC release];
     _presentVC = [presentVC retain];
+    
+    _allowsEditing = allowsEditing;
     
     int cancelButtonIndex = -1;
 
@@ -128,11 +141,11 @@ static UIViewController *_presentVC;
 
 + (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
 {
-	UIImage *editedImage = (UIImage*) [info valueForKey:UIImagePickerControllerEditedImage];
-    if(!editedImage)
-        editedImage = (UIImage*) [info valueForKey:UIImagePickerControllerOriginalImage];
+	UIImage *image = (UIImage*) [info valueForKey:UIImagePickerControllerEditedImage];
+    if(!image)
+        image = (UIImage*) [info valueForKey:UIImagePickerControllerOriginalImage];
     
-    _photoPickedBlock(editedImage);
+    _photoPickedBlock(image);
 	[picker dismissModalViewControllerAnimated:YES];	
 	[picker autorelease];
 }
@@ -169,7 +182,7 @@ static UIViewController *_presentVC;
             
             UIImagePickerController *picker = [[UIImagePickerController alloc] init];
             picker.delegate = (id<UINavigationControllerDelegate,UIImagePickerControllerDelegate>)[self class];
-            picker.allowsEditing = YES;
+            picker.allowsEditing = _allowsEditing;
             
             if(buttonIndex == 1) 
             {                

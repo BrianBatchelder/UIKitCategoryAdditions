@@ -33,4 +33,11 @@
                 onPhotoPicked:(PhotoPickedBlock) photoPicked                   
                      onCancel:(CancelBlock) cancelled;
 
++ (void) photoPickerWithTitle:(NSString*) title
+                   showInView:(UIView*) view
+                allowsEditing:(BOOL)allowsEditing
+                    presentVC:(UIViewController*) presentVC
+                onPhotoPicked:(PhotoPickedBlock) photoPicked
+                     onCancel:(CancelBlock) cancelled;
+
 @end
