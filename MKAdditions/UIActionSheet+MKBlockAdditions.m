@@ -145,9 +145,11 @@ static BOOL _allowsEditing;
     if(!image)
         image = (UIImage*) [info valueForKey:UIImagePickerControllerOriginalImage];
     
-    _photoPickedBlock(image);
-	[picker dismissModalViewControllerAnimated:YES];	
-	[picker autorelease];
+    [picker dismissViewControllerAnimated:YES completion:^{
+        [picker autorelease];
+        
+        _photoPickedBlock(image);
+    }];
 }
 
 
